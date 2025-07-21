@@ -203,13 +203,13 @@ El endpoint acepta un objeto con la siguiente estructura:
 
 ## 🎨 Personalización
 
-Puedes modificar el diseño del PDF editando el archivo `src/pdfGenerator.js`. Los estilos están definidos usando `StyleSheet.create()` de React-PDF.
+Podés modificar el diseño del PDF editando el archivo `src/pdfGenerator.js`. Los estilos están definidos usando `StyleSheet.create()` de React-PDF.
 
 ## 🚨 Solución de problemas
 
 ### Error de compilación
 
-Si tienes problemas con la compilación, asegúrate de tener Node.js 14+ instalado y ejecuta:
+Si tenés problemas con la compilación, asegúrate de tener Node.js 14+ instalado y ejecuta:
 
 ```bash
 rm -rf node_modules pnpm-lock.yaml
