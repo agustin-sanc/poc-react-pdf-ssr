@@ -64,13 +64,6 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
-# Generated PDF files for testing
-test-*.pdf
-*.pdf
-
 # pnpm specific files
 pnpm-lock.yaml
 .pnpm-store/
-
-# Generated PDFs directory
-pdfs/ 
