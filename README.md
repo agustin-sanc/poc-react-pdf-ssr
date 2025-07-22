@@ -7,7 +7,7 @@ Esta es una prueba de concepto que demuestra cómo generar PDFs del lado del ser
 - ✅ Generación de PDFs del lado del servidor
 - ✅ API REST con Express
 - ✅ Diseño profesional con tablas y estilos
-- ✅ Soporte para datos dinámicos
+- ✅ Datos automáticos generados por el servidor
 - ✅ Endpoint de prueba incluido
 
 ## 📦 Instalación
@@ -46,43 +46,29 @@ pnpm dev
 GET http://localhost:3000/health
 ```
 
-#### 2. Generar PDF con datos personalizados
+#### 2. Generar PDF automático
 
 ```bash
 POST http://localhost:3000/generate-pdf
-Content-Type: application/json
-
-{
-  "data": {
-    "titulo": "Mi Reporte Personalizado",
-    "fecha": "2024-01-15",
-    "id": "REP-001",
-    "estado": "Aprobado",
-    "items": [
-      {
-        "id": 1,
-        "nombre": "Producto A",
-        "precio": 100,
-        "cantidad": 2
-      },
-      {
-        "id": 2,
-        "nombre": "Producto B",
-        "precio": 200,
-        "cantidad": 1
-      }
-    ],
-    "total": 400,
-    "notas": "Este es un reporte de ejemplo con notas adicionales."
-  }
-}
 ```
+
+Este endpoint genera automáticamente un PDF con datos de ejemplo y lo guarda en el servidor.
 
 #### 3. Generar PDF de prueba
 
 ```bash
 GET http://localhost:3000/test-pdf
 ```
+
+Este endpoint genera un PDF de prueba con datos simplificados.
+
+#### 4. Listar PDFs generados
+
+```bash
+GET http://localhost:3000/pdfs
+```
+
+Este endpoint lista todos los PDFs generados y guardados en el servidor.
 
 ## 📋 Ejemplos de uso
 
@@ -94,67 +80,55 @@ GET http://localhost:3000/test-pdf
 curl http://localhost:3000/health
 ```
 
+**Generar PDF automático:**
+
+```bash
+curl -X POST http://localhost:3000/generate-pdf
+```
+
 **Generar PDF de prueba:**
 
 ```bash
-curl -o test-reporte.pdf http://localhost:3000/test-pdf
+curl -X GET http://localhost:3000/test-pdf
 ```
 
-**Generar PDF personalizado:**
+**Listar PDFs generados:**
 
 ```bash
-curl -X POST http://localhost:3000/generate-pdf \
-  -H "Content-Type: application/json" \
-  -d '{
-    "data": {
-      "titulo": "Reporte de Ventas",
-      "fecha": "2024-01-15",
-      "id": "VENT-2024-001",
-      "estado": "Completado",
-      "items": [
-        {"id": 1, "nombre": "Laptop", "precio": 1200, "cantidad": 1},
-        {"id": 2, "nombre": "Mouse", "precio": 25, "cantidad": 3},
-        {"id": 3, "nombre": "Teclado", "precio": 80, "cantidad": 2}
-      ],
-      "total": 1335,
-      "notas": "Reporte generado automáticamente por el sistema."
-    }
-  }' \
-  -o reporte-personalizado.pdf
+curl http://localhost:3000/pdfs
 ```
 
 ### Con JavaScript/Fetch
 
 ```javascript
-// Generar PDF personalizado
+// Generar PDF automático
 const response = await fetch("http://localhost:3000/generate-pdf", {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    data: {
-      titulo: "Reporte de Inventario",
-      fecha: new Date().toLocaleDateString("es-ES"),
-      id: "INV-001",
-      estado: "Pendiente",
-      items: [
-        { id: 1, nombre: "Producto 1", precio: 50, cantidad: 10 },
-        { id: 2, nombre: "Producto 2", precio: 75, cantidad: 5 },
-      ],
-      total: 875,
-      notas: "Inventario actualizado al día de hoy.",
-    },
-  }),
 });
 
 if (response.ok) {
-  const blob = await response.blob();
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "reporte.pdf";
-  a.click();
+  const result = await response.json();
+  console.log("PDF generado:", result);
+}
+
+// Generar PDF de prueba
+const testResponse = await fetch("http://localhost:3000/test-pdf", {
+  method: "GET",
+});
+
+if (testResponse.ok) {
+  const testResult = await testResponse.json();
+  console.log("PDF de prueba generado:", testResult);
+}
+
+// Listar PDFs
+const pdfsResponse = await fetch("http://localhost:3000/pdfs", {
+  method: "GET",
+});
+
+if (pdfsResponse.ok) {
+  const pdfs = await pdfsResponse.json();
+  console.log("PDFs disponibles:", pdfs);
 }
 ```
 
@@ -163,7 +137,8 @@ if (response.ok) {
 ```
 ├── src/
 │   ├── server.js          # Servidor Express principal
-│   └── pdfGenerator.js    # Lógica de generación de PDFs
+│   ├── pdfGenerator.js    # Lógica de generación de PDFs
+│   └── pdfs/              # Carpeta donde se guardan los PDFs generados
 ├── package.json           # Dependencias y scripts
 ├── webpack.config.js      # Configuración de Webpack
 ├── .babelrc              # Configuración de Babel
@@ -178,32 +153,46 @@ if (response.ok) {
 - **Babel** - Transpilación de JavaScript
 - **Puppeteer** - Renderizado del lado del servidor
 
-## 📊 Formato de datos
+## 📊 Datos generados automáticamente
 
-El endpoint acepta un objeto con la siguiente estructura:
+Los endpoints generan automáticamente datos con la siguiente estructura:
 
 ```javascript
 {
-  "titulo": "Título del reporte",
-  "fecha": "Fecha de generación",
-  "id": "ID único del reporte",
-  "estado": "Estado del reporte",
+  "titulo": "Reporte Automático",
+  "fecha": "Fecha actual en formato español",
+  "id": "REP-[timestamp]",
+  "estado": "Generado",
   "items": [
     {
       "id": 1,
-      "nombre": "Nombre del producto",
+      "nombre": "Producto A",
       "precio": 100,
       "cantidad": 2
+    },
+    {
+      "id": 2,
+      "nombre": "Producto B",
+      "precio": 200,
+      "cantidad": 1
+    },
+    {
+      "id": 3,
+      "nombre": "Producto C",
+      "precio": 150,
+      "cantidad": 3
     }
   ],
-  "total": 200,
-  "notas": "Notas adicionales (opcional)"
+  "total": 750,
+  "notas": "Este reporte fue generado automáticamente por el sistema."
 }
 ```
 
 ## 🎨 Personalización
 
 Podés modificar el diseño del PDF editando el archivo `src/pdfGenerator.js`. Los estilos están definidos usando `StyleSheet.create()` de React-PDF.
+
+Para personalizar los datos generados automáticamente, podés editar la lógica en `src/server.js` en los endpoints `/generate-pdf` y `/test-pdf`.
 
 ## 🚨 Solución de problemas
 
